@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Just a Little Card Game</title>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Game of Bridge" />
+    <meta name="keywords" content="squawk7x, browser card game, bridge" />
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+  </head>
+  <body>
+    <header id="main-header">
+      <h1>Rules Of The Game</h1>
+    </header>
+
+    <nav id="navbar">
+      <div class="nav-container">
+        <ul>
+          <!-- <li><a href="/index.html">Back to the Game</a></li> -->
+        </ul>
+      </div>
+    </nav>
+    <hr />
+
+    <main>
+      <h2>
+        <br />
+        This card game is played with 36 cards, consisting of 4 suits and ranks
+        ranging from 6 to Ace.
+      </h2>
+      <p>
+        The game can be played by 2, 3, or 4 players. Player 1 will play against
+        1, 2, or 3 AI players. Each player starts with 5 cards. To begin, Player
+        1 puts a card onto the stack and can add more cards with the same rank.
+        The next player can play the first card either with the same suit or the
+        same rank and can play more cards with the same rank. Initially, the
+        cards on hand must be used, and at least one card must be played. If the
+        player does not hold a suitable card, one card must be drawn from the
+        blind. This card may be played if it matches the card on the stack, and
+        more cards from the player's hand with the same rank can be played
+        subsequently. If the drawn card does not match the card on the stack,
+        the next player continues. Therefore, no more than one card can be drawn
+        from the blind, except when a '6' is placed on the stack. A '6' must
+        always be covered by another rank, and if no suitable card is in the
+        player's hand, they must draw cards from the blind until the
+        '6-must-be-covered rule' is fulfilled. Additionally, other ranks such as
+        7, 8, J, and A have special features. (For an explanation, refer to the
+        section below titled 'Special Cards').
+      </p>
+      <br />
+
+      <p>
+        The Deck shown in normal mode (hidden players) and testing mode (open
+        cards):
+      </p>
+      <p>
+        <img
+          src="./images/example_deck_hidden.png"
+          height="500px"
+          alt="Image Description"
+        />
+      </p>
+
+      <p>
+        The opaque cards indicate the active player. The "bridge
+        monitor" is located in the second row, displaying the last cards played
+        with the same rank. The red or blue card below represents the blind. A
+        red card indicates that the active player must draw a card. Next to the
+        blind is the stack of cards that have already been played. The field
+        below shows the possible cards for the next move. Finally, at the
+        bottom, the player's hand is displayed, with Player 1 shown
+        specifically.
+      </p>
+      <br />
+      <p>
+        <img
+          src="./images/example_deck_open.png"
+          height="500px"
+          alt="Image Description"
+        />
+      </p>
+      <br />
+      <h2>Special Cards:</h2>
+      <li>
+        A '6' in the game must be covered by the same player using a card of a
+        different rank, if necessary. The player can achieve this by drawing one
+        or more cards from the blind until they have a card that can cover the
+        '6'.
+      </li>
+      <li>
+        When a '7' is played, the next player must draw one card from the blind.
+      </li>
+      <li>
+        When an '8' is played, the next player must draw 2 cards and will be
+        passed over. If multiple '8's have been played, there are two
+        possibilities: Option 1: The next player must draw 2 cards for each '8'
+        on the stack and will be passed over. Option 2: The following players
+        (not just the next player) must draw 2 cards and will be passed over,
+        according to the number of '8's played. Please note that the specific
+        rules may vary depending on the variations of the game being played.
+      </li>
+      <li>
+        When a Jack ('J') is played, it can be played to any suit, and the
+        player who played the Jack gets to choose which suit must follow. This
+        means that the player can designate the desired suit for the next player
+        to play.
+      </li>
+      <li>
+        When an Ace ('A') is played, the next player will be passed over. If
+        multiple Aces have been played consecutively, the next players (in
+        sequential order) will also be passed over. This means that the turn
+        will skip those players, and it will continue with the player after the
+        last Ace was played.
+      </li>
+      <br />
+      <h3>Special Rule 'Bridge':</h3>
+      <p>
+        The "Bridge" special rule is as follows: If there are four cards in a
+        row on the stack with the same rank, the player who plays the fourth
+        card has the option to choose whether or not to finish the current
+        round. This means that he can decide whether to continue playing or to
+        end the round. In the case of a "Bridge" occurring with four instances
+        of the '6' card, the usual rule of the '6 must be covered' does not
+        apply. The "Bridge" overrides the '6 must be covered' rule in this
+        specific scenario. To keep track of the cards played in sequence with
+        the same rank, the "Bridge Monitor" is used. It is located in the second
+        row on the table and displays the cards played consecutively with the
+        same rank.
+      </p>
+      <br />
+      <h2>Counting:</h2>
+      <p>
+        Players note their points when one player has no more cards or when a
+        "Bridge" is announced. This means that scoring occurs either when a
+        player has played all their cards and has none left, or when the player
+        who played the fourth card in a row with the same rank chooses to end
+        the round by announcing a "Bridge."
+      </p>
+
+      <p>The card values are:</p>
+      <pre>
+        <table>
+          <tr>
+            <th>Card</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>J</td>
+            <td>20 (-20)</td>
+          </tr>
+          <tr>
+            <td>Q</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>K</td>
+            <td>10</td>
+          </tr>
+          <tr>
+            <td>A</td>
+            <td>15</td>
+          </tr>
+        </table>
+        
+      </pre>
+
+      <p>
+        For example, if a player's hand consists of these cards with individual
+        point values of 10, 15, 10, 0, and 20, the total value of those cards
+        would be 55 points. If a round is finished, these points would be added
+        to the player's score. The player's score accumulates over multiple
+        rounds, reflecting their overall performance in the game.
+      </p>
+      <img
+        src="./images/example_count_points.png"
+        height="100px"
+        alt="Image Description"
+      />
+      <br /> <br>
+      <h3>Special Counting 'J':</h3>
+      <p>If a player finishes a round with a 'J':</p>
+      <ul>
+        <li>
+          His score will either be reduced by 20 for each 'J' of his last move,
+          or
+        </li>
+        <li>
+          The scores of the other players will be increased by 20 for each 'J'
+          of his last move.
+        </li>
+      </ul>
+
+      <p>The winner of the current round decides which rule will apply.</p>
+
+      <p>If a player reaches exactly 125 points, his score is back on 0!</p>
+
+      <p>
+        When the blind is empty and more cards must be drawn, the stack will be
+        reshuffled. The points of this round will then be doubled (tripled,
+        ...). This also applies to the 'J'-points mentioned before. (An empty
+        blind is indicated as card with a grey backside.)
+      </p>
+
+      <p>The player with the highest score starts the next round.</p>
+
+      <p>The game is over once a player reaches more than 125 points.</p>
+
+      <br />
+      <h2>Game Control:</h2>
+
+      <p>The game can be controlled by mouse or keyboard.</p>
+
+      <table>
+        <tr>
+          <td>Mouseclick on card</td>
+          <td>Put card on stack</td>
+        </tr>
+        <tr>
+          <td>Toggle Decision J Points (-20 or +20)</td>
+          <td>
+            Toggle Decision 8s (all for next player or share between next
+            players)
+          </td>
+        </tr>
+        <tr>
+          <td>Keyboard UP ↑</td>
+          <td>
+            The most right card in the row of possible cards will be played
+          </td>
+        </tr>
+        <tr>
+          <td>Toggle Decision Bridge (Yes / No)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Mouseclick on red blind card</td>
+          <td>Draw card from blind</td>
+        </tr>
+        <tr>
+          <td>Keyboard DN ↓</td>
+          <td>Draw card from blind</td>
+        </tr>
+        <tr>
+          <td>Toggle Decision J Points (-20/+20)</td>
+          <td>
+            Toggle Decision 8s (all for next player or share between next
+            players)
+          </td>
+        </tr>
+        <tr>
+          <td>Keyboard LEFT ←</td>
+          <td>Toggle possible cards</td>
+        </tr>
+        <tr>
+          <td>Toggle J Suit (Mouseclick)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Right Mouseclick or Keyboard RIGHT →</td>
+          <td>
+            Activate next Player / Confirm Bridge / Confirm Count Points /
+            Confirm New Round
+          </td>
+        </tr>
+        <tr>
+          <td>Push on 'Ok' or Keyboard ENTER</td>
+          <td>Confirmation of dialog messages</td>
+        </tr>
+      </table>
+
+      <br />
+      <img
+        src="./images/example_count_round.png"
+        height="500px"
+        alt="Image Description"
+      />
+      <img
+        src="./images/example_new_round.png"
+        height="500px"
+        alt="Image Description"
+      />
+
+      <br /><br />
+
+      <h2>Decisions:</h2>
+      <ul>
+        <p>J Suit? - Which suit must follow a 'J'.</p>
+        <p>
+          When a 'J' is played, a 'Jsuit-Chooser' is shown. It can be clicked or
+          changed using the keyboard 'Left' arrow to select the desired suit for
+          the next move. By default, it toggles to the most common suit in the
+          player's hand deck.
+        </p>
+
+        <img
+          src="./cards/jsuit_of_diamonds.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/jsuit_of_hearts.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/jsuit_of_spades.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/jsuit_of_clubs.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+
+        <p>Bridge? - Round is finished or round will continue.</p>
+        <p>
+          When a Bridge situation occurs, the 'Bridge-Chooser' will be shown. It
+          can be clicked or changed using the keyboard 'Up' arrow to toggle the
+          decision between finishing the round or continuing.
+        </p>
+
+        <img
+          src="./cards/bridge_y.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/bridge_n.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+
+        <p>J Points? Plus for other players or minus for the active player.</p>
+        <p>
+          When a round ends with a 'J' on the stack, a 'J Point-Chooser' is
+          shown. It can be clicked or changed using the keyboard 'Down' arrow to
+          toggle the decision between adding points for other players or
+          subtracting points for the active player.
+        </p>
+
+        <img
+          src="./cards/jpoints_p.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/jpoints_m.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+
+        <p>
+          8s? Next player must draw 2 cards for each 8 played, or the following
+          players must draw 2 cards.
+        </p>
+        <p>
+          When 2 or more 8s are played by the same active player, the
+          '8-Chooser' will come up. It can be clicked or changed using the
+          keyboard 'Down' arrow to toggle the decision between the next player
+          drawing 2 cards for each 8 played or the following players drawing 2
+          cards.
+        </p>
+
+        <img
+          src="./cards/eights_for_n.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+        <img
+          src="./cards/eights_for_a.jpg"
+          height="100px"
+          alt="Image Description"
+        />
+      </ul>
+      <br />
+
+      <p>
+        If there are multiple decisions to be made (e.g., Bridge yes/no and how
+        to share the '8's between the next player and following players), you
+        can use the mouse or keyboard to toggle the decisions.
+      </p>
+
+      <br />
+      <img
+        src="./images/example_bridge_1.png"
+        height="100px"
+        alt="Bridge - 8s for all players"
+      />
+      <img
+        src="./images/example_bridge_2.png"
+        height="100px"
+        alt="Continue round - 8s for next player"
+      />
+      <img
+        src="./images/example_bridge_3.png"
+        height="100px"
+        alt="Bridge - 8s for next player"
+      />
+      <img
+        src="./images/example_bridge_4.png"
+        height="100px"
+        alt="Continue round - 8s for all players"
+      />
+      <br />
+      <br />
+      <h2>Special Keys (used for testing):</h2>
+      <p>
+        You can 'influence' the game by dispensing additional cards, finishing a
+        round, or making the other players' cards visible.
+      </p>
+      <ul>
+        <li>
+          v: Toggles the visibility of other players' cards as well as the
+          listing of their possible cards for the next move.
+        </li>
+        <li>f: Finishes the current round.</li>
+        <li>
+          6, 7, 8, J, Q, K, A: Adds a card with the corresponding rank and a
+          random suit to the hand deck of the active player.
+        </li>
+      </ul>
+      <br />
+      <p>
+        You can follow and review the moves by opening the developer console in
+        your browser. For example, press F12 in Google Chrome and select
+        'Console'. The output may look like this:
+      </p>
+
+      <ul>
+        <li>Player_3 got ♥6</li>
+        <li>Player_1 has played ♦8</li>
+        <li>Player_2 has drawn ♦J from the blind</li>
+      </ul>
+
+      <br />
+      <h2>TODOs:</h2>
+      <ul>
+        <li>Logging moves to database</li>
+        <li>More sophisticated AI of robot players</li>
+        <li>Gaming against human players over network</li>
+      </ul>
+    </main>
+  </body>
+</html>

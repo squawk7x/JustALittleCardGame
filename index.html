@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Game of Bridge</title>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Game of Bridge - browser card game written in JavaScript" />
+    <meta name="keywords" content="free card game, Javascript" />
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+    <link rel="icon" href="./bridge.ico" type="image/x-icon" />
+  </head>
+
+  <body>
+    <header id="main-header">
+      <h1>Just a Little Card Game</h1>
+    </header>
+
+    <nav id="navbar">
+      <div class="nav-container">
+        <ul>
+          <li><a href="/howto.html" target="blank">How to play</a></li>
+        </ul>
+      </div>
+    </nav>
+    <hr />
+
+    <section id="setup">
+      <form action="">
+        <input id="num_2" type="radio" name="number_of_players" value="2" /> 2 Players
+        <input id="num_3" type="radio" name="number_of_players" value="3" /> 3 Players
+        <input id="num_4" type="radio" name="number_of_players" value="4" /> 4 Players
+        <button type="submit" id="new_game">Start New Game</button>
+        <button type="submit" id="visButton">Show Cards of Other Players</button>
+        <button type="submit" id="shuffles">Game: 0 | Round: 0 | Shuffles: 0</button>
+      </form>
+    </section>
+    <hr />
+
+    <section>
+      <div class="scores">
+        <p class="score">scores</p>
+      </div>
+    </section>
+
+    <hr />
+
+    <section>
+      <div class="board">
+        <div class="other_players">
+          <p class="player" id="player_x">other players</p>
+        </div>
+
+        <hr />
+
+        <p class="deck" id="bridge_monitor">bridge monitor</p>
+        <hr />
+        <p class="deck" id="table">table</p>
+        <hr />
+        <p class="deck" id="possible_cards">possible cards</p>
+        <hr />
+
+        <p class="player" id="player_1">player 1</p>
+      </div>
+    </section>
+
+    <hr />
+    <section>
+      <div class="scores">
+        <p class="score" id="score_1">score</p>
+      </div>
+    </section>
+
+    <section>
+      <form class="controls" action="">
+        <input class="btn" type="submit" id="toggle" value="      ◀      " />
+        <input class="btn" type="submit" id="draw" value="      ⬇      " />
+        <input class="btn" type="submit" id="play" value="      ⬆      " />
+        <input class="btn" type="submit" id="next" value="      ▶      " />
+      </form>
+    </section>
+
+    <hr />
+
+    <footer id="main-footer">Copyright &copy; 2023, squawk7x</footer>
+
+    <script src="game_logic.js" type="module"></script>
+  </body>
+</html>
