@@ -267,7 +267,8 @@ class Deck {
 
     if (
       bridge.player.hand.cards.length === 0 &&
-      deck.get_top_card_from_stack().rank !== '6'
+      deck.get_top_card_from_stack().rank !== '6' &&
+      !bridgeChooser.decision
     ) {
       roundChooser.toggle_to('c');
     }
@@ -751,7 +752,10 @@ class Bridge {
 
   ask_for_bridge() {
     let key;
-    if (this.player.hand.count_points() === 0) {
+    if (
+      this.player.hand.count_points() === 0 ||
+      this.player.hand.length === 0
+    ) {
       key = 'y';
     } else if (this.player.hand.count_points() >= 25) {
       key = 'n';
@@ -789,8 +793,6 @@ class Bridge {
         player.score = 0;
       }
     }
-
-    // deck.bridge_monitor = [];
   }
 
   finish_round() {
@@ -932,7 +934,6 @@ class Bridge {
     while (parentElement.firstChild) {
       parentElement.removeChild(parentElement.firstChild);
     }
-    if (!roundChooser.decision) {
       const bridge_monitor = document.getElementById('bridge_monitor');
       for (const card of deck.bridge_monitor) {
         const img = document.createElement('img');
@@ -940,7 +941,6 @@ class Bridge {
         img.height = CARD_HEIGHT;
         bridge_monitor.appendChild(img);
       }
-    }
 
     // Table (Blind & Stack)
     parentElement = document.querySelector('#table');
@@ -975,13 +975,6 @@ class Bridge {
       img.id = 'round';
       img.height = CARD_HEIGHT * 1;
       table.appendChild(img);
-
-      document
-        .getElementById('round')
-        .addEventListener('contextmenu', (event) => {
-          event.preventDefault();
-          this.play('ArrowRight');
-        });
     }
 
     if (bridgeChooser.decision) {
@@ -995,13 +988,6 @@ class Bridge {
         event.preventDefault();
         this.play('ArrowUp');
       });
-
-      document
-        .getElementById('bridge')
-        .addEventListener('contextmenu', (event) => {
-          event.preventDefault();
-          this.play('ArrowRight');
-        });
     }
 
     if (eightChooser.decision) {
@@ -1112,8 +1098,15 @@ class Bridge {
     kb RIGHT  : Next Player | Confirm Bridge, JPoints, Eights
     */
 
-    if (key === 'ArrowRight' && this.player.is_robot) {
+    if (
+      key === 'ArrowRight' &&
+      this.player.is_robot &&
+      !roundChooser.decision
+    ) {
       this.player.auto_play();
+      if (roundChooser.decision === 'c') {
+        roundChooser.decision = 'delay';
+      }
     }
 
     if (key === 'ArrowLeft') {
@@ -1150,6 +1143,8 @@ class Bridge {
       } else if (roundChooser.decision === 'c') {
         this.count_round();
         roundChooser.toggle_to('n');
+      } else if (roundChooser.decision === 'delay') {
+        roundChooser.toggle_to('c');
       } else if (bridgeChooser.decision === 'y') {
         roundChooser.toggle_to('c');
       } else if (
@@ -1184,6 +1179,7 @@ class Bridge {
     if (roundChooser.decision !== '') {
       deck.is_visible = true;
     }
+
     this.updateUI();
   }
 }
@@ -1211,12 +1207,13 @@ let visButton = document.getElementById('visButton');
 visButton.addEventListener('click', (event) => {
   event.preventDefault();
   deck.toggle_is_visible();
-  if (deck.is_visible === false) {
+  if (deck.is_visible === false && bridge) {
     visButton.textContent = 'Show Cards of Other Players';
-  } else {
+    bridge.updateUI();
+  } else if (deck.is_visible === true && bridge) {
     visButton.textContent = 'Hide Cards of Other Players';
+    bridge.updateUI();
   }
-  bridge.updateUI();
 });
 
 document.addEventListener('keydown', (event) => {
