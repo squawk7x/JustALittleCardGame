@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Game of Bridge</title>
+    <title>Just a Little Card Game</title>
     <meta charset="UTF-8" />
-    <meta name="description" content="Game of Bridge - browser card game written in JavaScript" />
-    <meta name="keywords" content="free card game, Javascript" />
+    <meta name="description" content="Free Card Game written by Andreas Ottburg (Source Code available on Github: squawk7x)"
+    />
+    <meta
+    name="keywords"
+    content="Free Card Game written by Andreas Ottburg (Source Code available on Github: squawk7x)"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Andreas Ottburg">
     <link rel="stylesheet" type="text/css" href="./css/style.css" />
-    <link rel="icon" href="./bridge.ico" type="image/x-icon" />
+    <link rel="icon" href="./favicon.png" type="image/x-icon" />
   </head>
 
   <body>
@@ -25,12 +31,21 @@
 
     <section id="setup">
       <form action="">
-        <input id="num_2" type="radio" name="number_of_players" value="2" /> 2 Players
-        <input id="num_3" type="radio" name="number_of_players" value="3" /> 3 Players
-        <input id="num_4" type="radio" name="number_of_players" value="4" /> 4 Players
+        <input id="num_2" type="radio" name="number_of_players" value="2" /> 2
+        Players
+        <input id="num_3" type="radio" name="number_of_players" value="3" /> 3
+        Players
+        <input id="num_4" type="radio" name="number_of_players" value="4" /> 4
+        Players
         <button type="submit" id="new_game">Start New Game</button>
-        <button type="submit" id="visButton">Show Cards of Other Players</button>
-        <button type="submit" id="shuffles">Game: 0 | Round: 0 | Shuffles: 0</button>
+        <button type="submit" id="visButton">
+          Show Cards of Other Players
+        </button>
+        <button type="submit" id="shuffles">
+          Game: 0 | Round: 0 | Shuffles: 0
+        </button>
+        <input type="checkbox" id="sounds" name="sounds" value="on" checked />
+        <label for="sounds">Soundeffects</label>
       </form>
     </section>
     <hr />

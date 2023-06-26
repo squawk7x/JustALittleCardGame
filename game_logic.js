@@ -201,6 +201,8 @@ class Deck {
   }
 
   shuffle_blind() {
+    let audio = new Audio('./sounds/shuffling.mp3');
+    if (is_sound_on()) {audio.play();}
     this.blind =
       (this.blind,
       this.blind
@@ -225,11 +227,12 @@ class Deck {
   }
 
   put_card_on_stack(card) {
-    // roundChooser.clear_decision();
     bridgeChooser.clear_decision();
-    jpointsChooser.clear_decision();
     eightChooser.clear_decision();
     jsuitChooser.clear_suit();
+
+    let audio = new Audio('./sounds/put_card_on_stack.mp3');
+    if (is_sound_on()) {audio.play();}
 
     this.stack.push(card);
     this.cards_played.push(card);
@@ -270,7 +273,7 @@ class Deck {
       deck.get_top_card_from_stack().rank !== '6' &&
       !bridgeChooser.decision
     ) {
-      roundChooser.toggle_to('c');
+      roundChooser.decision = 'delay';
     }
   }
 
@@ -472,6 +475,8 @@ class Player {
       this.hand.cards.push(card);
       this.hand.cards_drawn.push(card);
       console.log(`${this.name} has drawn ${card} from blind`);
+      let audio = new Audio('./sounds/draw_card_from_blind.mp3');
+      if (is_sound_on()) {audio.play();}
     }
   }
 
@@ -538,9 +543,6 @@ class Player {
   auto_play() {
     this.hand.arrange_hand_cards();
     do {
-      if (roundChooser.decision) {
-        return;
-      }
       if (this.must_draw_card()) {
         this.draw_card_from_blind();
       }
@@ -754,7 +756,7 @@ class Bridge {
     let key;
     if (
       this.player.hand.count_points() === 0 ||
-      this.player.hand.length === 0
+      this.player.hand.cards.length === 0
     ) {
       key = 'y';
     } else if (this.player.hand.count_points() >= 25) {
@@ -934,13 +936,13 @@ class Bridge {
     while (parentElement.firstChild) {
       parentElement.removeChild(parentElement.firstChild);
     }
-      const bridge_monitor = document.getElementById('bridge_monitor');
-      for (const card of deck.bridge_monitor) {
-        const img = document.createElement('img');
-        img.src = `./cards/${card.rankname}_of_${card.suitname}.jpg`;
-        img.height = CARD_HEIGHT;
-        bridge_monitor.appendChild(img);
-      }
+    const bridge_monitor = document.getElementById('bridge_monitor');
+    for (const card of deck.bridge_monitor) {
+      const img = document.createElement('img');
+      img.src = `./cards/${card.rankname}_of_${card.suitname}.jpg`;
+      img.height = CARD_HEIGHT;
+      bridge_monitor.appendChild(img);
+    }
 
     // Table (Blind & Stack)
     parentElement = document.querySelector('#table');
@@ -1119,7 +1121,8 @@ class Bridge {
       if (
         bridgeChooser.decision &&
         deck.cards_played.length > 0 &&
-        !roundChooser.decision
+        !roundChooser.decision &&
+        this.player.hand.cards.length > 0
       ) {
         bridgeChooser.toggle();
       } else if (!roundChooser.decision) {
@@ -1130,7 +1133,7 @@ class Bridge {
     if (key === 'ArrowDown' && !this.player.is_robot) {
       if (eightChooser.decision && deck.cards_played.length > 0) {
         eightChooser.toggle();
-      } else if (jpointsChooser.decision) {
+      } else if (jpointsChooser.decision && deck.cards_played.length > 0) {
         jpointsChooser.toggle();
       } else if (this.player.must_draw_card()) {
         this.player.draw_card_from_blind();
@@ -1160,6 +1163,7 @@ class Bridge {
       visButton.click();
     }
     if (key === 'f') {
+      this.count_round();
       this.finish_round();
     }
     if (key === 's') {
@@ -1249,3 +1253,14 @@ document.addEventListener('contextmenu', (event) => {
 document.getElementById('shuffles').addEventListener('click', (event) => {
   event.preventDefault();
 });
+
+function is_sound_on() {
+  let sound = document.getElementById('sounds');
+  let isChecked = sound.checked;
+
+  if (isChecked) {
+    return true;
+  } else {
+    return false;
+  }
+}
