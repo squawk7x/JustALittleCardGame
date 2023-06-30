@@ -202,13 +202,31 @@ class Deck {
 
   shuffle_blind() {
     let audio = new Audio('./sounds/shuffling.mp3');
-    if (is_sound_on()) {audio.play();}
+    if (is_sound_on()) {
+      audio.play();
+    }
     this.blind =
       (this.blind,
       this.blind
         .map((value) => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value));
+  }
+
+  stack_as_str() {
+    let stack = '';
+    for (let card of this.stack) {
+      stack = card.toString() + ' ' + stack;
+    }
+    return stack;
+  }
+
+  blind_as_str() {
+    let blind = '';
+    for (let card of this.blind) {
+      blind = card.toString() + ' ' + blind;
+    }
+    return blind;
   }
 
   card_from_blind() {
@@ -227,18 +245,32 @@ class Deck {
   }
 
   put_card_on_stack(card) {
+    jpointsChooser.clear_decision();
     bridgeChooser.clear_decision();
     eightChooser.clear_decision();
     jsuitChooser.clear_suit();
 
     let audio = new Audio('./sounds/put_card_on_stack.mp3');
-    if (is_sound_on()) {audio.play();}
+    if (is_sound_on()) {
+      audio.play();
+    }
 
     this.stack.push(card);
     this.cards_played.push(card);
     this.update_bridge_monitor(card);
 
     console.log(`${bridge.player.name} has played ${card}`);
+    console.log('stack: ', this.stack_as_str());
+    console.log('blind: ', this.blind_as_str());
+    
+    // Logging
+    logData({
+      player: bridge.player.name,
+      card: card.toString(),
+      stack: this.stack_as_str(),
+      blind: this.blind_as_str()
+    });
+
 
     if (deck.bridge_monitor.length === 4) {
       bridge.ask_for_bridge();
@@ -476,7 +508,9 @@ class Player {
       this.hand.cards_drawn.push(card);
       console.log(`${this.name} has drawn ${card} from blind`);
       let audio = new Audio('./sounds/draw_card_from_blind.mp3');
-      if (is_sound_on()) {audio.play();}
+      if (is_sound_on()) {
+        audio.play();
+      }
     }
   }
 
@@ -561,6 +595,8 @@ class Bridge {
   }
 
   start_game() {
+    console.log(`------------- Game  ${this.number_of_games}--------------`);
+
     this.player_list = [];
 
     for (let p = 1; p <= this.number_of_players; p++) {
@@ -573,10 +609,13 @@ class Bridge {
     this.init_UI();
     this.number_of_games += 1;
     this.number_of_rounds = 0;
+
     this.start_round();
   }
 
   start_round() {
+    console.log(`------------- Round ${this.number_of_rounds}--------------`);
+
     this.number_of_rounds += 1;
 
     jpointsChooser.clear_decision();
@@ -585,7 +624,6 @@ class Bridge {
     roundChooser.clear_decision();
 
     deck.bridge_monitor = [];
-
     deck = new Deck();
 
     this.player = this.shuffler();
@@ -597,7 +635,6 @@ class Bridge {
 
     const card = this.player.hand.cards.pop();
     deck.put_card_on_stack(card);
-
     this.play();
   }
 
@@ -889,17 +926,18 @@ class Bridge {
     for (let i = 1; i <= tmp_player_list.length; i++) {
       let score = document.getElementById(`score_${i}`);
       score.innerHTML =
-        'Score ' +
+        // 'Score ' +
         tmp_player_list[i - 1].name +
         ': ' +
         '<b>' +
         tmp_player_list[i - 1].score +
-        '</b>';
+        '</b>' +
+        ' points';
     }
 
     const score_1 = document.getElementById('score_1');
     score_1.innerHTML =
-      'Score ' +
+      // 'Score ' +
       tmp_player_list[0].name +
       ': ' +
       '<b>' +
@@ -1094,7 +1132,7 @@ class Bridge {
 
   play(key = null) {
     /*
-    kb LEFT   : Toggle P.C. | Toggle Jsuit
+    kb LEFT   :             | Toggle Jsuit   | Toggle Possible Cards
     kb UP     : Play Card   | Toggle Bridge
     kb DOWN   : Draw Card   | Toggle JPoints | Toggle Eights
     kb RIGHT  : Next Player | Confirm Bridge, JPoints, Eights
@@ -1158,7 +1196,7 @@ class Bridge {
       }
     }
 
-    // Testing
+    // Special keys for testing
     if (key === 'v') {
       visButton.click();
     }
@@ -1263,4 +1301,20 @@ function is_sound_on() {
   } else {
     return false;
   }
+}
+
+function logData(data) {
+  const url = new URL('http://localhost:3000/insertdata');
+  url.searchParams.set('player', data.player);
+  url.searchParams.set('card', data.card);
+  url.searchParams.set('stack', data.stack);
+  url.searchParams.set('blind', data.blind);
+
+  fetch(url.toString())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Request failed');
+      }
+      return response.json();
+    })
 }
