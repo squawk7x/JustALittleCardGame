@@ -58,7 +58,7 @@ app.get('/insertdata', (req, res) => {
       console.error(err);
       res.status(500).send('Error inserting data.');
     } else {
-      console.log(result);
+      // console.log(result);
       res.json({ message: 'Data inserted successfully.' });
     }
   });
@@ -70,7 +70,7 @@ function clearTable(tableName) {
     if (err) {
       throw err;
     }
-    // console.log(`Table ${tableName} cleared.`, result);
+    console.log(`Table ${tableName} cleared.`);
   });
 }
 

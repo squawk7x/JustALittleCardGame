@@ -1,5 +1,8 @@
 'use strict';
 
+// import * as Realm from "realm-web";
+// const app = new Realm.App({ id: APP_ID });
+
 const ranks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 const suits = ['♦', '♥', '♠', '♣'];
 const ranknames = ['6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace'];
@@ -263,13 +266,13 @@ class Deck {
     console.log('stack: ', this.stack_as_str());
     console.log('blind: ', this.blind_as_str());
     
-    // Logging
-    logData({
-      player: bridge.player.name,
-      card: card.toString(),
-      stack: this.stack_as_str(),
-      blind: this.blind_as_str()
-    });
+    // Logging mysql
+    // logData({
+    //   player: bridge.player.name,
+    //   card: card.toString(),
+    //   stack: this.stack_as_str(),
+    //   blind: this.blind_as_str()
+    // });
 
 
     if (deck.bridge_monitor.length === 4) {
@@ -1303,18 +1306,20 @@ function is_sound_on() {
   }
 }
 
-function logData(data) {
-  const url = new URL('http://localhost:3000/insertdata');
-  url.searchParams.set('player', data.player);
-  url.searchParams.set('card', data.card);
-  url.searchParams.set('stack', data.stack);
-  url.searchParams.set('blind', data.blind);
 
-  fetch(url.toString())
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Request failed');
-      }
-      return response.json();
-    })
-}
+// // mysql
+// function logData(data) {
+//   const url = new URL('http://localhost:3000/insertdata');
+//   url.searchParams.set('player', data.player);
+//   url.searchParams.set('card', data.card);
+//   url.searchParams.set('stack', data.stack);
+//   url.searchParams.set('blind', data.blind);
+
+//   fetch(url.toString())
+//     .then((response) => {
+//       if (!response.ok) {
+//         throw new Error('Request failed');
+//       }
+//       return response.json();
+//     })
+// }

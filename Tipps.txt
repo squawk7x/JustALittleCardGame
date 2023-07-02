@@ -396,3 +396,15 @@ console.groupEnd('group end')
 console.time('timer')
 ...	
 console.timeEnd('timer')	
+
+
+MONGO :
+-------
+use mydb ->
+mydb>
+create document:
+
+
+db.mydoc.find({a: "foo"})
+
+
