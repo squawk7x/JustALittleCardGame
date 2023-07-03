@@ -1,8 +1,5 @@
 'use strict';
 
-// import * as Realm from "realm-web";
-// const app = new Realm.App({ id: APP_ID });
-
 const ranks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 const suits = ['♦', '♥', '♠', '♣'];
 const ranknames = ['6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace'];
@@ -265,15 +262,6 @@ class Deck {
     console.log(`${bridge.player.name} has played ${card}`);
     console.log('stack: ', this.stack_as_str());
     console.log('blind: ', this.blind_as_str());
-    
-    // Logging mysql
-    // logData({
-    //   player: bridge.player.name,
-    //   card: card.toString(),
-    //   stack: this.stack_as_str(),
-    //   blind: this.blind_as_str()
-    // });
-
 
     if (deck.bridge_monitor.length === 4) {
       bridge.ask_for_bridge();
@@ -341,6 +329,14 @@ class Handdeck {
     }
     this.cards_drawn = [];
     this.possible_cards = [];
+  }
+
+  hand_as_str() {
+    let hand = '';
+    for (let card of this.cards) {
+      hand = card.toString() + ' ' + hand;
+    }
+    return hand;
   }
 
   count_points() {
@@ -763,6 +759,8 @@ class Bridge {
         leap += 1;
       }
     }
+
+    take_snapshot();
   }
 
   ask_for_jsuit() {
@@ -1306,20 +1304,45 @@ function is_sound_on() {
   }
 }
 
+function sendData(data) {
+  fetch('http://localhost:3000/blobs', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
-// // mysql
-// function logData(data) {
-//   const url = new URL('http://localhost:3000/insertdata');
-//   url.searchParams.set('player', data.player);
-//   url.searchParams.set('card', data.card);
-//   url.searchParams.set('stack', data.stack);
-//   url.searchParams.set('blind', data.blind);
+function receiveData() {
+  fetch('http://localhost:3000/blobs')
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data); // Access the received data
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
 
-//   fetch(url.toString())
-//     .then((response) => {
-//       if (!response.ok) {
-//         throw new Error('Request failed');
-//       }
-//       return response.json();
-//     })
-// }
+function take_snapshot() {
+  const player_hands = this.player_list
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .map((p) => p.hand.hand_as_str());
+
+  sendData({
+    player_hands,
+    blind: deck.blind_as_str(),
+    stack: deck.stack_as_str(),
+    next_player: this.player.name,
+  });
+}
+  

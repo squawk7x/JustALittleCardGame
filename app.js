@@ -1,8 +1,10 @@
 const express = require('express');
 const { ObjectId } = require('mongodb');
 const { connectToDb, getDb } = require('./db');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // db Connection
@@ -11,7 +13,7 @@ let db;
 
 connectToDb((err) => {
   if (!err) {
-    app.listen(3000, () => {
+    app.listen(process.env.port || 3000, () => {
       console.log('listening on port 3000');
     });
     db = getDb();
