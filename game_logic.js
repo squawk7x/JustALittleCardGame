@@ -259,6 +259,8 @@ class Deck {
     this.cards_played.push(card);
     this.update_bridge_monitor(card);
 
+    take_snapshot();
+
     console.log(`${bridge.player.name} has played ${card}`);
     console.log('stack: ', this.stack_as_str());
     console.log('blind: ', this.blind_as_str());
@@ -591,6 +593,7 @@ class Bridge {
     this.is_robot_game = is_robot_game;
     this.number_of_games = 0;
     this.number_of_rounds = 0;
+    this.number_of_moves = 0;
   }
 
   start_game() {
@@ -616,6 +619,9 @@ class Bridge {
     console.log(`------------- Round ${this.number_of_rounds}--------------`);
 
     this.number_of_rounds += 1;
+    this.number_of_moves = 0;
+
+    deleteAllData();
 
     jpointsChooser.clear_decision();
     eightChooser.clear_decision();
@@ -759,8 +765,6 @@ class Bridge {
         leap += 1;
       }
     }
-
-    take_snapshot();
   }
 
   ask_for_jsuit() {
@@ -1211,6 +1215,9 @@ class Bridge {
     if (key === 'd') {
       this.player.hand.cards.pop();
     }
+    if (key === 'r') {
+      receiveLastData();
+    }
     if (
       key in { 6: '6', 7: '7', 8: '8', 9: '9', j: 'j', q: 'q', k: 'k', a: 'a' }
     ) {
@@ -1304,8 +1311,18 @@ function is_sound_on() {
   }
 }
 
+function take_snapshot() {
+  sendData({
+    player_list: bridge.player_list,
+    cards_played: deck.cards_played,
+    bridge_monitor: deck.bridge_monitor,
+    blind: deck.blind,
+    stack: deck.stack,
+  });
+}
+
 function sendData(data) {
-  fetch('http://localhost:3000/blobs', {
+  fetch('http://localhost:3000/api/blobs', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1313,36 +1330,73 @@ function sendData(data) {
     body: JSON.stringify(data),
   })
     .then((response) => response.json())
-    .then((result) => {
-      console.log(result);
-    })
     .catch((error) => {
       console.error('Error:', error);
     });
 }
 
-function receiveData() {
-  fetch('http://localhost:3000/blobs')
+function receiveLastData() {
+  fetch('http://localhost:3000/api/blobs')
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // Access the received data
+      if (data.length > 0) {
+        const lastEntry = data[data.length - 1];
+
+        const gameData = lastEntry; 
+        console.log(gameData);
+
+        bridge.player_list = gameData.player_list.slice();
+        deck.cards_played = gameData.cards_played.slice();
+        deck.bridge_monitor = gameData.bridge_monitor.slice();
+        deck.blind = gameData.blind.slice();
+        deck.stack = gameData.stack.slice();
+        
+        bridge.player = bridge.player_list[0];
+        console.log('Player:', bridge.player);
+
+        bridge.updateUI();
+
+        deleteLastData();
+
+      } else {
+        console.log('No entries found');
+      }
     })
     .catch((error) => {
       console.error('Error:', error);
     });
 }
 
-function take_snapshot() {
-  const player_hands = this.player_list
-    .slice()
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .map((p) => p.hand.hand_as_str());
+function deleteLastData() {
+  fetch('http://localhost:3000/api/blobs')
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.length > 1) {
+        const lastEntry = data[data.length - 1];
+        const lastEntryId = lastEntry._id;
 
-  sendData({
-    player_hands,
-    blind: deck.blind_as_str(),
-    stack: deck.stack_as_str(),
-    next_player: this.player.name,
-  });
+        fetch(`http://localhost:3000/api/blobs/${lastEntryId}`, {
+          method: 'DELETE',
+        })
+          .then((response) => response.json())
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      } else {
+        console.log('No entries found');
+      }
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 }
-  
+
+function deleteAllData() {
+  fetch('http://localhost:3000/api/blobs', {
+    method: 'DELETE',
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}

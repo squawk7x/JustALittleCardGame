@@ -1,13 +1,28 @@
 const express = require('express');
-const { ObjectId } = require('mongodb');
-const { connectToDb, getDb } = require('./db');
+const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// db Connection
+let dbConnection;
+
+const url =
+  'mongodb+srv://squawk7x:Falcon7x@cluster0.2llkx6k.mongodb.net/?retryWrites=true&w=majority';
+// const url = 'mongodb://localhost:27017/bridge'
+
+function connectToDb(cb) {
+  MongoClient.connect(url)
+    .then((client) => {
+      dbConnection = client.db();
+      cb();
+    })
+    .catch((err) => {
+      console.log(err);
+      cb(err);
+    });
+}
 
 let db;
 
@@ -16,20 +31,13 @@ connectToDb((err) => {
     app.listen(process.env.port || 3000, () => {
       console.log('listening on port 3000');
     });
-    db = getDb();
+    db = dbConnection;
   }
 });
 
-// routes
 app.get('/blobs', (req, res) => {
-  // current page
-  // const page = req.query.p || 0;
-  // const blobsPerPage = 1;
-
   db.collection('blobs')
     .find()
-    // .skip(page * blobsPerPage)
-    // .limit(blobsPerPage)
     .toArray()
     .then((blobs) => {
       res.status(200).json(blobs);
@@ -49,8 +57,20 @@ app.get('/blobs/:_id', (req, res) => {
       .catch((err) => {
         res.status(500).json({ err: 'Could not fetch the document' });
       });
-  } else {
-    res.status(500).json({ err: 'Not a valid id' });
+  }
+  else {
+    db.collection('blobs')
+      .findOne({}, { sort: { _id: -1 } })
+      .then((lastEntry) => {
+        if (lastEntry) {
+          res.status(200).json(lastEntry);
+        } else {
+          res.status(404).json({ error: 'No entries found' });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({ error: 'Could not fetch the last entry' });
+      });
   }
 });
 
@@ -64,6 +84,18 @@ app.post('/blobs', (req, res) => {
       res.status(500).json({ err: 'Could not create the document' })
     );
 });
+
+app.delete('/blobs', (req, res) => {
+  db.collection('blobs')
+    .deleteMany({})
+    .then((result) => {
+      res.status(200).json({ message: 'All data deleted' });
+    })
+    .catch((err) => {
+      res.status(500).json({ err: 'Could not delete data' });
+    });
+});
+
 
 app.delete('/blobs/:_id', (req, res) => {
   const id = req.params._id;
