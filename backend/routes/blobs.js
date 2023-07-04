@@ -1,28 +1,25 @@
 const express = require('express');
-const { createBlob } = require('../controllers/blobController');
+const {
+  createBlob,
+  getBlobs,
+  getBlob,
+  deleteBlob,
+  deleteAllBlobs,
+  updateBlob,
+} = require('../controllers/blobController');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.json({ msg: 'GET' });
-});
+router.get('/', getBlobs);
 
-router.get('/:id', (req, res) => {
-  res.json({ msg: 'GET a single id' });
-});
+router.get('/:id', getBlob);
 
 router.post('/', createBlob);
 
-router.delete('/', (req, res) => {
-  res.json({ msg: 'DELETE a single id' });
-});
+router.delete('/', deleteAllBlobs);
 
-router.delete('/:id', (req, res) => {
-  res.json({ msg: 'DELETE a single id' });
-});
+router.delete('/:id', deleteBlob);
 
-router.patch('/:id', (req, res) => {
-  res.json({ msg: 'PATCH a single id' });
-});
+router.patch('/:id', updateBlob);
 
 module.exports = router;
