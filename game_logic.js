@@ -513,6 +513,9 @@ class Player {
         audio.play();
       }
     }
+    if (cards <= 2) {
+      take_snapshot();
+    }
   }
 
   must_draw_card() {
@@ -656,7 +659,7 @@ class Bridge {
   }
 
   cycle_player_list_to(player) {
-    while (this.player_list[0] !== player) {
+    while (this.player_list[0].name !== player.name) {
       this.cycle_player_list();
     }
   }
@@ -1234,7 +1237,9 @@ class Bridge {
   }
 }
 
-let bridge;
+var bridge;
+
+////////////////////////////////////////////////////////////////
 
 document.getElementById('new_game').addEventListener('click', (event) => {
   event.preventDefault();
@@ -1311,6 +1316,8 @@ function is_sound_on() {
   }
 }
 
+////////////////////////////////////////////////////////////////
+
 function take_snapshot() {
   sendData({
     player_list: bridge.player_list,
@@ -1320,6 +1327,34 @@ function take_snapshot() {
     stack: deck.stack,
   });
 }
+
+function restore_snapshot(blob) {
+  const { player_list, cards_played, bridge_monitor, blind, stack } = blob;
+
+  bridge.cycle_player_list_to(player_list[0]);
+
+  for (let i = 0; i < bridge.player_list.length; i++) {
+    bridge.player_list[i].hand.cards = player_list[i].hand.cards.slice();
+  }
+
+  deck.cards_played = [...cards_played];
+  deck.bridge_monitor = [...bridge_monitor];
+  deck.blind = [...blind];
+  deck.stack = [...stack];
+
+  jpointsChooser.clear_decision();
+  eightChooser.clear_decision();
+  bridgeChooser.clear_decision();
+  roundChooser.clear_decision();
+  jsuitChooser.clear_suit();
+
+  bridge.updateUI();
+
+  console.log('Data restored successfully');
+  deleteLastData();
+}
+
+////////////////////////////////////////////////////////////////
 
 function sendData(data) {
   fetch('http://localhost:3000/api/blobs', {
@@ -1340,26 +1375,10 @@ function receiveLastData() {
     .then((response) => response.json())
     .then((data) => {
       if (data.length > 0) {
-        const lastEntry = data[data.length - 1];
-
-        const gameData = lastEntry; 
-        console.log(gameData);
-
-        bridge.player_list = gameData.player_list.slice();
-        deck.cards_played = gameData.cards_played.slice();
-        deck.bridge_monitor = gameData.bridge_monitor.slice();
-        deck.blind = gameData.blind.slice();
-        deck.stack = gameData.stack.slice();
-        
-        bridge.player = bridge.player_list[0];
-        console.log('Player:', bridge.player);
-
-        bridge.updateUI();
-
-        deleteLastData();
-
+        const lastBlob = data[data.length - 1];
+        restore_snapshot(lastBlob);
       } else {
-        console.log('No entries found');
+        console.log('No blobs found');
       }
     })
     .catch((error) => {
@@ -1400,3 +1419,5 @@ function deleteAllData() {
       console.error('Error:', error);
     });
 }
+
+////////////////////////////////////////////////////////////////
