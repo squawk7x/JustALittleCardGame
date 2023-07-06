@@ -355,7 +355,7 @@ M   Model       Handels Data Logic
 				Interacts with DB
 V   View        Handels Presentation Logic
 				Dynamic Rendering
-C   Controller  Handles Request Flow
+C   Controller  Handles Request Flow / Routing
 
 
 NODE.JS
@@ -406,5 +406,7 @@ create document:
 
 
 db.mydoc.find({a: "foo"})
+
+
 
 

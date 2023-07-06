@@ -624,7 +624,7 @@ class Bridge {
     this.number_of_rounds += 1;
     this.number_of_moves = 0;
 
-    deleteAllData();
+    // deleteAllData();
 
     jpointsChooser.clear_decision();
     eightChooser.clear_decision();
@@ -1039,17 +1039,15 @@ class Bridge {
     }
 
     if (eightChooser.decision) {
-      if (this.number_of_players > 2) {
-        const img = document.createElement('img');
-        img.src = `./cards/eights_for_${eightChooser.decision}.jpg`;
-        img.id = 'eights';
-        img.height = CARD_HEIGHT * 1;
-        table.appendChild(img);
-        document.getElementById('eights').addEventListener('click', (event) => {
-          event.preventDefault();
-          this.play('ArrowDown');
-        });
-      }
+      const img = document.createElement('img');
+      img.src = `./cards/eights_for_${eightChooser.decision}.jpg`;
+      img.id = 'eights';
+      img.height = CARD_HEIGHT * 1;
+      table.appendChild(img);
+      document.getElementById('eights').addEventListener('click', (event) => {
+        event.preventDefault();
+        this.play('ArrowDown');
+      });
     }
 
     if (jpointsChooser.decision) {
@@ -1210,14 +1208,19 @@ class Bridge {
     if (key === 'v') {
       visButton.click();
     }
+    if (key === 'f') {
+      this.count_round();
+      this.finish_round();
+    }
     if (key === 's') {
       this.get_scores();
     }
     if (key === 'd') {
       this.player.hand.cards.pop();
     }
-    if (key === 'u') {
-      receiveLastData();
+    if (key === 'r') {
+      restore_snapshot();
+      // receiveLastData();
     }
     if (
       key in { 6: '6', 7: '7', 8: '8', 9: '9', j: 'j', q: 'q', k: 'k', a: 'a' }
@@ -1269,10 +1272,6 @@ visButton.addEventListener('click', (event) => {
   }
 });
 
-document.getElementById('shuffles').addEventListener('click', () => {
-  bridge.play('u');
-});
-
 document.addEventListener('keydown', (event) => {
   bridge.play(event.key);
 });
@@ -1318,46 +1317,37 @@ function is_sound_on() {
   }
 }
 
-function is_undo_on() {
-  let undo = document.getElementById('undo');
-  let isChecked = undo.checked;
-
-  if (isChecked) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 ////////////////////////////////////////////////////////////////
+let GAMEDATA = [];
 
 function take_snapshot() {
-  if (is_sound_on()) {
-    let blob = {
-      player_list: bridge.player_list,
-      cards_played: deck.cards_played,
-      bridge_monitor: deck.bridge_monitor,
-      blind: deck.blind,
-      stack: deck.stack,
-    };
-    sendData(blob);
-  }
+  let blob = {
+    player_list: bridge.player_list,
+    cards_played: deck.cards_played,
+    bridge_monitor: deck.bridge_monitor,
+    blind: deck.blind,
+    stack: deck.stack,
+  };
+  GAMEDATA.push(blob);
+  console.log(GAMEDATA);
+  // sendData(blob);
 }
 
-function restore_snapshot(blob) {
-  if (is_undo_on()) {
-    const { player_list, cards_played, bridge_monitor, blind, stack } = blob;
-
+function restore_snapshot() {
+  if (GAMEDATA.length > 1) {
+    let { player_list, cards_played, bridge_monitor, blind, stack } =
+      GAMEDATA[GAMEDATA.length - 1];
+    
     bridge.cycle_player_list_to(player_list[0]);
 
     for (let i = 0; i < bridge.player_list.length; i++) {
       bridge.player_list[i].hand.cards = player_list[i].hand.cards.slice();
     }
 
-    deck.cards_played = [...cards_played];
-    deck.bridge_monitor = [...bridge_monitor];
-    deck.blind = [...blind];
-    deck.stack = [...stack];
+    deck.cards_played = cards_played.slice();
+    deck.bridge_monitor = bridge_monitor.slice();
+    deck.blind = blind.slice();
+    deck.stack = stack.slice();
 
     jpointsChooser.clear_decision();
     eightChooser.clear_decision();
@@ -1366,9 +1356,11 @@ function restore_snapshot(blob) {
     jsuitChooser.clear_suit();
 
     bridge.updateUI();
-
-    console.log('Data restored successfully');
-    deleteLastData();
+    GAMEDATA.pop();
+    // console.log('Data restored successfully');
+    // deleteLastData();
+  } else {
+    console.log('No snapshots available');
   }
 }
 
