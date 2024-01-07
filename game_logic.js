@@ -259,8 +259,6 @@ class Deck {
     this.cards_played.push(card);
     this.update_bridge_monitor(card);
 
-    take_snapshot();
-
     console.log(`${bridge.player.name} has played ${card}`);
     console.log('stack: ', this.stack_as_str());
     console.log('blind: ', this.blind_as_str());
