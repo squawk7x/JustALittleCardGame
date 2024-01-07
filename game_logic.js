@@ -511,9 +511,6 @@ class Player {
         audio.play();
       }
     }
-    if (cards <= 2) {
-      take_snapshot();
-    }
   }
 
   must_draw_card() {
