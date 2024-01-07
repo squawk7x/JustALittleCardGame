@@ -201,12 +201,32 @@ class Deck {
   }
 
   shuffle_blind() {
+    let audio = new Audio('./sounds/shuffling.mp3');
+    if (is_sound_on()) {
+      audio.play();
+    }
     this.blind =
       (this.blind,
       this.blind
         .map((value) => ({ value, sort: Math.random() }))
         .sort((a, b) => a.sort - b.sort)
         .map(({ value }) => value));
+  }
+
+  stack_as_str() {
+    let stack = '';
+    for (let card of this.stack) {
+      stack = card.toString() + ' ' + stack;
+    }
+    return stack;
+  }
+
+  blind_as_str() {
+    let blind = '';
+    for (let card of this.blind) {
+      blind = card.toString() + ' ' + blind;
+    }
+    return blind;
   }
 
   card_from_blind() {
@@ -225,17 +245,25 @@ class Deck {
   }
 
   put_card_on_stack(card) {
-    // roundChooser.clear_decision();
-    bridgeChooser.clear_decision();
     jpointsChooser.clear_decision();
+    bridgeChooser.clear_decision();
     eightChooser.clear_decision();
     jsuitChooser.clear_suit();
+
+    let audio = new Audio('./sounds/put_card_on_stack.mp3');
+    if (is_sound_on()) {
+      audio.play();
+    }
 
     this.stack.push(card);
     this.cards_played.push(card);
     this.update_bridge_monitor(card);
 
+    take_snapshot();
+
     console.log(`${bridge.player.name} has played ${card}`);
+    console.log('stack: ', this.stack_as_str());
+    console.log('blind: ', this.blind_as_str());
 
     if (deck.bridge_monitor.length === 4) {
       bridge.ask_for_bridge();
@@ -270,7 +298,7 @@ class Deck {
       deck.get_top_card_from_stack().rank !== '6' &&
       !bridgeChooser.decision
     ) {
-      roundChooser.toggle_to('c');
+      roundChooser.decision = 'delay';
     }
   }
 
@@ -303,6 +331,14 @@ class Handdeck {
     }
     this.cards_drawn = [];
     this.possible_cards = [];
+  }
+
+  hand_as_str() {
+    let hand = '';
+    for (let card of this.cards) {
+      hand = card.toString() + ' ' + hand;
+    }
+    return hand;
   }
 
   count_points() {
@@ -472,6 +508,13 @@ class Player {
       this.hand.cards.push(card);
       this.hand.cards_drawn.push(card);
       console.log(`${this.name} has drawn ${card} from blind`);
+      let audio = new Audio('./sounds/draw_card_from_blind.mp3');
+      if (is_sound_on()) {
+        audio.play();
+      }
+    }
+    if (cards <= 2) {
+      take_snapshot();
     }
   }
 
@@ -538,9 +581,6 @@ class Player {
   auto_play() {
     this.hand.arrange_hand_cards();
     do {
-      if (roundChooser.decision) {
-        return;
-      }
       if (this.must_draw_card()) {
         this.draw_card_from_blind();
       }
@@ -556,9 +596,12 @@ class Bridge {
     this.is_robot_game = is_robot_game;
     this.number_of_games = 0;
     this.number_of_rounds = 0;
+    this.number_of_moves = 0;
   }
 
   start_game() {
+    console.log(`------------- Game  ${this.number_of_games}--------------`);
+
     this.player_list = [];
 
     for (let p = 1; p <= this.number_of_players; p++) {
@@ -571,11 +614,15 @@ class Bridge {
     this.init_UI();
     this.number_of_games += 1;
     this.number_of_rounds = 0;
+
     this.start_round();
   }
 
   start_round() {
+    console.log(`------------- Round ${this.number_of_rounds}--------------`);
+
     this.number_of_rounds += 1;
+    this.number_of_moves = 0;
 
     jpointsChooser.clear_decision();
     eightChooser.clear_decision();
@@ -583,7 +630,6 @@ class Bridge {
     roundChooser.clear_decision();
 
     deck.bridge_monitor = [];
-
     deck = new Deck();
 
     this.player = this.shuffler();
@@ -595,7 +641,6 @@ class Bridge {
 
     const card = this.player.hand.cards.pop();
     deck.put_card_on_stack(card);
-
     this.play();
   }
 
@@ -612,7 +657,7 @@ class Bridge {
   }
 
   cycle_player_list_to(player) {
-    while (this.player_list[0] !== player) {
+    while (this.player_list[0].name !== player.name) {
       this.cycle_player_list();
     }
   }
@@ -754,7 +799,7 @@ class Bridge {
     let key;
     if (
       this.player.hand.count_points() === 0 ||
-      this.player.hand.length === 0
+      this.player.hand.cards.length === 0
     ) {
       key = 'y';
     } else if (this.player.hand.count_points() >= 25) {
@@ -887,17 +932,18 @@ class Bridge {
     for (let i = 1; i <= tmp_player_list.length; i++) {
       let score = document.getElementById(`score_${i}`);
       score.innerHTML =
-        'Score ' +
+        // 'Score ' +
         tmp_player_list[i - 1].name +
         ': ' +
         '<b>' +
         tmp_player_list[i - 1].score +
-        '</b>';
+        '</b>' +
+        ' points';
     }
 
     const score_1 = document.getElementById('score_1');
     score_1.innerHTML =
-      'Score ' +
+      // 'Score ' +
       tmp_player_list[0].name +
       ': ' +
       '<b>' +
@@ -934,13 +980,13 @@ class Bridge {
     while (parentElement.firstChild) {
       parentElement.removeChild(parentElement.firstChild);
     }
-      const bridge_monitor = document.getElementById('bridge_monitor');
-      for (const card of deck.bridge_monitor) {
-        const img = document.createElement('img');
-        img.src = `./cards/${card.rankname}_of_${card.suitname}.jpg`;
-        img.height = CARD_HEIGHT;
-        bridge_monitor.appendChild(img);
-      }
+    const bridge_monitor = document.getElementById('bridge_monitor');
+    for (const card of deck.bridge_monitor) {
+      const img = document.createElement('img');
+      img.src = `./cards/${card.rankname}_of_${card.suitname}.jpg`;
+      img.height = CARD_HEIGHT;
+      bridge_monitor.appendChild(img);
+    }
 
     // Table (Blind & Stack)
     parentElement = document.querySelector('#table');
@@ -991,15 +1037,17 @@ class Bridge {
     }
 
     if (eightChooser.decision) {
-      const img = document.createElement('img');
-      img.src = `./cards/eights_for_${eightChooser.decision}.jpg`;
-      img.id = 'eights';
-      img.height = CARD_HEIGHT * 1;
-      table.appendChild(img);
-      document.getElementById('eights').addEventListener('click', (event) => {
-        event.preventDefault();
-        this.play('ArrowDown');
-      });
+      if (this.number_of_players > 2) {
+        const img = document.createElement('img');
+        img.src = `./cards/eights_for_${eightChooser.decision}.jpg`;
+        img.id = 'eights';
+        img.height = CARD_HEIGHT * 1;
+        table.appendChild(img);
+        document.getElementById('eights').addEventListener('click', (event) => {
+          event.preventDefault();
+          this.play('ArrowDown');
+        });
+      }
     }
 
     if (jpointsChooser.decision) {
@@ -1092,7 +1140,7 @@ class Bridge {
 
   play(key = null) {
     /*
-    kb LEFT   : Toggle P.C. | Toggle Jsuit
+    kb LEFT   :             | Toggle Jsuit   | Toggle Possible Cards
     kb UP     : Play Card   | Toggle Bridge
     kb DOWN   : Draw Card   | Toggle JPoints | Toggle Eights
     kb RIGHT  : Next Player | Confirm Bridge, JPoints, Eights
@@ -1119,7 +1167,8 @@ class Bridge {
       if (
         bridgeChooser.decision &&
         deck.cards_played.length > 0 &&
-        !roundChooser.decision
+        !roundChooser.decision &&
+        this.player.hand.cards.length > 0
       ) {
         bridgeChooser.toggle();
       } else if (!roundChooser.decision) {
@@ -1130,7 +1179,7 @@ class Bridge {
     if (key === 'ArrowDown' && !this.player.is_robot) {
       if (eightChooser.decision && deck.cards_played.length > 0) {
         eightChooser.toggle();
-      } else if (jpointsChooser.decision) {
+      } else if (jpointsChooser.decision && deck.cards_played.length > 0) {
         jpointsChooser.toggle();
       } else if (this.player.must_draw_card()) {
         this.player.draw_card_from_blind();
@@ -1155,12 +1204,9 @@ class Bridge {
       }
     }
 
-    // Testing
+    // Special keys for testing
     if (key === 'v') {
       visButton.click();
-    }
-    if (key === 'f') {
-      this.finish_round();
     }
     if (key === 's') {
       this.get_scores();
@@ -1184,7 +1230,9 @@ class Bridge {
   }
 }
 
-let bridge;
+var bridge;
+
+////////////////////////////////////////////////////////////////
 
 document.getElementById('new_game').addEventListener('click', (event) => {
   event.preventDefault();
@@ -1214,6 +1262,10 @@ visButton.addEventListener('click', (event) => {
     visButton.textContent = 'Hide Cards of Other Players';
     bridge.updateUI();
   }
+});
+
+document.getElementById('shuffles').addEventListener('click', () => {
+  bridge.play('u');
 });
 
 document.addEventListener('keydown', (event) => {
@@ -1249,3 +1301,27 @@ document.addEventListener('contextmenu', (event) => {
 document.getElementById('shuffles').addEventListener('click', (event) => {
   event.preventDefault();
 });
+
+function is_sound_on() {
+  let sound = document.getElementById('sounds');
+  let isChecked = sound.checked;
+
+  if (isChecked) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function is_undo_on() {
+  let undo = document.getElementById('undo');
+  let isChecked = undo.checked;
+
+  if (isChecked) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+////////////////////////////////////////////////////////////////

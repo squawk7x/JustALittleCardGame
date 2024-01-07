@@ -1,12 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Game of Bridge</title>
+    <title>Just a Little Card Game</title>
     <meta charset="UTF-8" />
-    <meta name="description" content="Game of Bridge - browser card game written in JavaScript" />
-    <meta name="keywords" content="free card game, Javascript" />
+    <meta
+      name="description"
+      content="Free Card Game written by Andreas Ottburg (Source Code available on Github: squawk7x)"
+    />
+    <meta
+      name="keywords"
+      content="Free Card Game written by Andreas Ottburg (Source Code available on Github: squawk7x)"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="author" content="Andreas Ottburg" />
     <link rel="stylesheet" type="text/css" href="./css/style.css" />
-    <link rel="icon" href="./bridge.ico" type="image/x-icon" />
+    <link rel="icon" href="./bridge.png" type="image/x-icon" />
   </head>
 
   <body>
@@ -14,74 +22,131 @@
       <h1>Just a Little Card Game</h1>
     </header>
 
-    <nav id="navbar">
-      <div class="nav-container">
-        <ul>
-          <li><a href="/howto.html" target="blank">How to play</a></li>
-        </ul>
-      </div>
-    </nav>
-    <hr />
+    <main>
+      <div class="container">
+        <nav id="navbar">
+          <div class="nav-container">
+            <ul>
+              <li><a href="/howto.html" target="blank">How to play</a></li>
+            </ul>
+          </div>
+        </nav>
+        <hr />
 
-    <section id="setup">
-      <form action="">
-        <input id="num_2" type="radio" name="number_of_players" value="2" /> 2 Players
-        <input id="num_3" type="radio" name="number_of_players" value="3" /> 3 Players
-        <input id="num_4" type="radio" name="number_of_players" value="4" /> 4 Players
-        <button type="submit" id="new_game">Start New Game</button>
-        <button type="submit" id="visButton">Show Cards of Other Players</button>
-        <button type="submit" id="shuffles">Game: 0 | Round: 0 | Shuffles: 0</button>
-      </form>
-    </section>
-    <hr />
+        <section>
+          <form class="form" action="">
+            <div class="setup">
+              <input
+                id="num_2"
+                type="radio"
+                name="number_of_players"
+                value="2"
+              />
+              <label class="label" for="num_2">2 Players</label>
+              <input
+                id="num_3"
+                type="radio"
+                name="number_of_players"
+                value="3"
+              />
+              <label class="label" for="num_3">3 Players</label>
+              <input
+                id="num_4"
+                type="radio"
+                name="number_of_players"
+                value="4"
+              />
+              <label class="label" for="num_4">4 Players</label>
 
-    <section>
-      <div class="scores">
-        <p class="score">scores</p>
-      </div>
-    </section>
+              <input
+                class="sound"
+                type="checkbox"
+                id="sounds"
+                name="sounds"
+                value="on"
+                checked
+              />
+              <label class="label" for="sounds">Sound</label>
 
-    <hr />
+              <input
+                class="undo"
+                type="checkbox"
+                id="undo"
+                name="undo"
+                value="on"
+              />
+              <label class="label" for="undo"><u>U</u>ndo</label>
+            </div>
 
-    <section>
-      <div class="board">
-        <div class="other_players">
-          <p class="player" id="player_x">other players</p>
-        </div>
+            <div class="buttons form-item">
+              <button class="button" type="submit" id="new_game">
+                Start Game
+              </button>
+              <button class="button" type="submit" id="shuffles">
+                Game: 0 | Round: 0 | Shuffles: 0
+              </button>
+              <button class="button" type="submit" id="visButton">
+                Show Cards of Other Players
+              </button>
+            </div>
+          </form>
+        </section>
+        <hr />
+
+        <section>
+          <div class="scores">
+            <p class="scores">scores</p>
+          </div>
+        </section>
 
         <hr />
 
-        <p class="deck" id="bridge_monitor">bridge monitor</p>
-        <hr />
-        <p class="deck" id="table">table</p>
-        <hr />
-        <p class="deck" id="possible_cards">possible cards</p>
-        <hr />
+        <section>
+          <div class="board">
+            <p class="other_players row" id="player_x">other players</p>
+            
 
-        <p class="player" id="player_1">player 1</p>
+            <hr />
+            <p class="deck row" id="bridge_monitor">bridge monitor</p>
+            <hr />
+            <p class="deck row" id="table">table</p>
+            <hr />
+            <p class="deck row" id="possible_cards">possible cards</p>
+            <hr />
+
+            <p class="player row" id="player_1">player 1</p>
+
+          </div>
+        </section>
+
+        <hr />
+        <section>
+          <div class="scores">
+            <p class="score" id="score_1">score</p>
+          </div>
+        </section>
+
+        <section>
+          <form class="controls" action="">
+            <input
+              class="btn"
+              type="submit"
+              id="toggle"
+              value="      ◀      "
+            />
+            <input class="btn" type="submit" id="draw" value="      ⬇      " />
+            <input class="btn" type="submit" id="play" value="      ⬆      " />
+            <input class="btn" type="submit" id="next" value="      ▶      " />
+          </form>
+        </section>
+
+        <hr />
       </div>
-    </section>
+    </main>
 
-    <hr />
-    <section>
-      <div class="scores">
-        <p class="score" id="score_1">score</p>
-      </div>
-    </section>
-
-    <section>
-      <form class="controls" action="">
-        <input class="btn" type="submit" id="toggle" value="      ◀      " />
-        <input class="btn" type="submit" id="draw" value="      ⬇      " />
-        <input class="btn" type="submit" id="play" value="      ⬆      " />
-        <input class="btn" type="submit" id="next" value="      ▶      " />
-      </form>
-    </section>
-
-    <hr />
-
-    <footer id="main-footer">Copyright &copy; 2023, squawk7x</footer>
+    <footer id="footer">Copyright &copy; 2023, squawk7x</footer>
 
     <script src="game_logic.js" type="module"></script>
+
   </body>
 </html>
